@@ -1,4 +1,4 @@
-use crate::creatures::Creature;
+use crate::creatures::{Creature, Position};
 
 pub struct World {
     pub x_len: usize,
@@ -17,9 +17,9 @@ impl World {
         for i in 0..creature_count {
             let mut generating = true;
             while generating {
-                let creature = Creature::new(x_max, y_max, 3);
-                let x = creature.position.x;
-                let y = creature.position.y;
+                let (creature, position) = Creature::new(x_max, y_max, 20, 5);
+                let x = position.x;
+                let y = position.y;
                 if locs[x][y].is_none() {
                     locs[x][y] = Some(creature);
                     generating = false;
@@ -47,17 +47,14 @@ impl World {
 impl std::fmt::Display for World {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "World size {}X{}\n", self.x_len, self.y_len).unwrap();
-        for col in &self.locs {
-            for creature in col {
+        for (i, col) in self.locs.iter().enumerate() {
+            for (j, creature) in col.iter().enumerate() {
                 if creature.is_some() {
                     let unwrapped_creature = creature.as_ref().unwrap();
                     write!(
                         f,
                         "Creature ID {}, with Genome {}, at {}X{}\n",
-                        unwrapped_creature.id,
-                        unwrapped_creature.genome,
-                        unwrapped_creature.position.x,
-                        unwrapped_creature.position.y
+                        unwrapped_creature.id, unwrapped_creature.genome, i, j
                     )
                     .unwrap();
                 }
